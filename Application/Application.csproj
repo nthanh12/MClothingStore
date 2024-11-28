@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Shared\Consts\" />
+    <Folder Include="Shared\Funct\" />
+    <Folder Include="Shared\Utils\" />
+    <Folder Include="UserModules\DTOs\Category\" />
+    <Folder Include="UserModules\DTOs\Role\" />
+    <Folder Include="UserModules\DTOs\Payment\" />
+    <Folder Include="UserModules\DTOs\Order\" />
+    <Folder Include="UserModules\Implements\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
