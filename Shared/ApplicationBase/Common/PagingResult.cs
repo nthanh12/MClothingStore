@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Shared.ApplicationBase.Common
+namespace Shared.ApplicationBase.Common
 {
     public class PagingResult<T>
     {

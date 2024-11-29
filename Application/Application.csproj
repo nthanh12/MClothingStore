@@ -7,10 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Shared\Consts\" />
-    <Folder Include="Shared\Funct\" />
-    <Folder Include="Shared\Utils\" />
     <Folder Include="UserModules\DTOs\Category\" />
+    <Folder Include="UserModules\DTOs\ProductImage\" />
     <Folder Include="UserModules\DTOs\Role\" />
     <Folder Include="UserModules\DTOs\Payment\" />
     <Folder Include="UserModules\DTOs\Order\" />
