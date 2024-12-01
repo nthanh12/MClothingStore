@@ -14,5 +14,6 @@ namespace Domain.Interfaces
         Task AddImageAsync(int productId, List<ProductImage> productImage);
         Task UpdateImageAsync(int productId, List<ProductImage> productImage);
         Task DeleteImageAsync(int productId, int imageId);
+        Task DeleteImagesByProductIdAsync(int productId);
     }
 }

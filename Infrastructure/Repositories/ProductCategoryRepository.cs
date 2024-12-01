@@ -19,28 +19,54 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task AddAsync(ProductCategory productCategory)
+        public async Task AssignCategoriesAsync(int productId, List<int> categoryIds)
         {
-            await _context.ProductCategories.AddAsync(productCategory);
+            var existingCategories = await _context.ProductCategories
+                .Where(pc => pc.ProductId == productId)
+                .ToListAsync();
+
+            var newCategories = categoryIds.Where(c => !existingCategories.Any(ec => ec.CategoryId == c)).ToList();
+
+            var productCategories = newCategories.Select(categoryId => new ProductCategory
+            {
+                ProductId = productId,
+                CategoryId = categoryId
+            }).ToList();
+
+            await _context.ProductCategories.AddRangeAsync(productCategories);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteByProductIdAsync(int productId)
+        public async Task RemoveCategoriesAsync(int productId, List<int> categoryIds)
         {
             var productCategories = await _context.ProductCategories
-                .Where(pc => pc.ProductId == productId)
+                .Where(pc => pc.ProductId == productId && categoryIds.Contains(pc.CategoryId))
                 .ToListAsync();
 
-            _context.ProductCategories.RemoveRange(productCategories);
-            await _context.SaveChangesAsync();
+            if (productCategories.Any())
+            {
+                _context.ProductCategories.RemoveRange(productCategories);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public async Task<IEnumerable<ProductCategory>> GetByProductIdAsync(int productId)
+        //public async Task<IEnumerable<ProductCategory>> GetCategoriesByProductIdAsync(int productId)
+        //{
+        //    return await _context.ProductCategories
+        //        .Where(pc => pc.ProductId == productId)
+        //        .ToListAsync();
+        //}
+
+        public async Task RemoveProductFromCategoryAsync(int productId, int categoryId)
         {
-            return await _context.ProductCategories
-                .Where(pc => pc.ProductId == productId)
-                .ToListAsync();
-        }
+            var productCategory = await _context.ProductCategories
+                .FirstOrDefaultAsync(pc => pc.ProductId == productId && pc.CategoryId == categoryId);
 
+            if (productCategory != null)
+            {
+                _context.ProductCategories.Remove(productCategory);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

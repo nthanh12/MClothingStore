@@ -1,4 +1,7 @@
-﻿using Domain.Entities;
+﻿using Application.UserModules.DTOs.Product;
+using Application.UserModules.DTOs.ProductImage;
+using Domain.Entities;
+using Shared.ApplicationBase.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +12,12 @@ namespace Application.UserModules.Abstracts
 {
     public interface IProductService
     {
-        Task AddProductAsync(Product product, List<int> categoryIds, List<ProductImage> productImages);
-        Task UpdateProductAsync(Product product, List<int> newCategoryIds, List<ProductImage> newProductImages);
+        Task AddProductAsync(AddProductDto productDto, List<int> categoryIds, List<ProductImageDto> productImagesDto);
+        Task UpdateProductAsync(UpdateProductDto productDto, List<int> newCategoryIds, List<ProductImageDto> newProductImagesDto);
         Task DeleteProductAsync(int productId);
-        Task<IEnumerable<Product>> GetAllProductsAsync();
-        Task<Product> GetProductByIdAsync(int productId);
+        Task<PagingResult<ProductDto>> GetAllProductsAsync();
+        Task<IEnumerable<ProductDto>> GetPagedProductsAsync(PagingRequestBaseDto input);
+
+        Task<ProductDto> GetProductByIdAsync(int productId);
     }
 }

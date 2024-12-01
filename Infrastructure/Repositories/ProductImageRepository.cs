@@ -18,18 +18,26 @@ namespace Infrastructure.Repositories
         {
             _context = context;
         }
-        public async Task AddImageAsync(int productId, ProductImage productImage)
+        public async Task AddImageAsync(int productId, List<ProductImage> productImages)
         {
-            var product = await _context.Set<Product>().FindAsync(productId);
-            if (product == null)
+            if (productImages == null || !productImages.Any())
+            {
+                throw new ArgumentException("Danh sách hình ảnh không được rỗng.", nameof(productImages));
+            }
+
+            var productExists = await _context.Set<Product>().AnyAsync(p => p.Id == productId);
+            if (!productExists)
             {
                 throw new Exception("Sản phẩm không tồn tại.");
             }
 
-            productImage.ProductId = productId;
-            await _context.Set<ProductImage>().AddAsync(productImage);
+            // Gán ProductId cho mỗi hình ảnh trong danh sách
+            productImages.ForEach(image => image.ProductId = productId);
+
+            await _context.Set<ProductImage>().AddRangeAsync(productImages);
             await _context.SaveChangesAsync();
         }
+
 
         public async Task DeleteImageAsync(int productId, int imageId)
         {
@@ -73,22 +81,34 @@ namespace Infrastructure.Repositories
 
         }
 
-        public async Task UpdateImageAsync(int productId, ProductImage productImage)
+        public async Task UpdateImageAsync(int productId, List<ProductImage> productImages)
         {
-            var product = await _context.Set<Product>().FindAsync(productId);
-            if (product == null)
+            if (productImages == null || !productImages.Any())
             {
-                throw new Exception("Sản phẩm không tồn tại.");
+                throw new ArgumentException("Danh sách hình ảnh không được rỗng.", nameof(productImages));
             }
 
-            var existingImage = await _context.Set<ProductImage>().FirstOrDefaultAsync(pi => pi.ProductId == productId && pi.Id == productImage.Id);
-            if (existingImage == null)
+            var existingImages = await _context.Set<ProductImage>()
+                .Where(pi => pi.ProductId == productId && productImages.Select(p => p.Id).Contains(pi.Id))
+                .ToListAsync();
+
+            if (existingImages.Count != productImages.Count)
             {
-                throw new Exception("Hình ảnh không tồn tại.");
+                throw new Exception("Một hoặc nhiều hình ảnh không tồn tại hoặc không thuộc sản phẩm này.");
             }
 
-            existingImage.ImageUrl = productImage.ImageUrl;
+            foreach (var updatedImage in productImages)
+            {
+                var existingImage = existingImages.FirstOrDefault(ei => ei.Id == updatedImage.Id);
+                if (existingImage != null)
+                {
+                    existingImage.ImageUrl = updatedImage.ImageUrl;
+                }
+            }
+
+            _context.Set<ProductImage>().UpdateRange(existingImages);
             await _context.SaveChangesAsync();
         }
+
     }
 }

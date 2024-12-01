@@ -8,10 +8,14 @@
 
   <ItemGroup>
     <Folder Include="UserModules\DTOs\Category\" />
-    <Folder Include="UserModules\DTOs\ProductImage\" />
     <Folder Include="UserModules\DTOs\Role\" />
     <Folder Include="UserModules\DTOs\Payment\" />
     <Folder Include="UserModules\DTOs\Order\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
   </ItemGroup>
 
   <ItemGroup>
