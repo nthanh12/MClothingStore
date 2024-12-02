@@ -82,18 +82,36 @@ namespace Application.UserModules.Implements
             }
         }
 
-        public async Task<PagingResult<ProductDto>> GetAllProductsAsync()
+        public async Task<PagingResult<ProductDto>> GetPagedProductsAsync(ProductPagingRequestDto requestDto)
         {
-            var result = await _productRepository.GetAllAsync();
-            var productDtos = _mapper.Map<IEnumerable<ProductDto>>(result);
+            var result = await _productRepository.GetPagedProductsAsync(
+                requestDto.PageNumber,
+                requestDto.PageSize,
+                requestDto.Keyword,
+                requestDto.CategoryId,
+                requestDto.MinPrice,
+                requestDto.MaxPrice,
+                requestDto.Sort
+            );
+
+            if (result.TotalItems == 0)
+            {
+                return new PagingResult<ProductDto>
+                {
+                    TotalItems = 0,
+                    Items = new List<ProductDto>(),
+                };
+            }
+            var productDtos = _mapper.Map<IEnumerable<ProductDto>>(result.Items);
+
             return new PagingResult<ProductDto>
             {
-                Items = productDtos,
-                TotalItems = result.Count()
+                TotalItems = result.TotalItems,
+                Items = productDtos
             };
         }
 
-        public Task<IEnumerable<ProductDto>> GetPagedProductsAsync(PagingRequestBaseDto input)
+        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
         {
             throw new NotImplementedException();
         }

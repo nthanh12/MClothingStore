@@ -33,7 +33,7 @@ namespace API.Controllers
             }
         }
         [HttpGet("paged")]
-        public async Task<ApiResponse> Paged(PagingRequestBaseDto input)
+        public async Task<ApiResponse> GetPagedProductsAsync(ProductPagingRequestDto input)
         {
             try
             {

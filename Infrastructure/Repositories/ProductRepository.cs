@@ -62,41 +62,66 @@ namespace Infrastructure.Persistances
                 .Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm))
                 .ToListAsync();
         }
-
-        // Lấy sản phẩm theo phân trang
-        public async Task<PagingResult<Product>> GetPagedProductsAsync(int pageNumber, int pageSize, string? keyword = null, int? categoryId = null, decimal? minPrice = null, decimal? maxPrice = null)
+      
+        public async Task<PagingResult<Product>> GetPagedProductsAsync(
+            int pageNumber,
+            int pageSize,
+            string? keyword = null,
+            int? categoryId = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null,
+            List<string> sort = null) 
         {
             var query = _context.Products.AsQueryable();
 
+            // keyword
             if (!string.IsNullOrEmpty(keyword))
             {
                 query = query.Where(p => p.Name.Contains(keyword) || p.Description.Contains(keyword));
             }
 
+            // categoryId
             if (categoryId.HasValue)
             {
                 query = query.Where(p => p.ProductCategories.Any(pc => pc.CategoryId == categoryId));
             }
 
+            // Price
             if (minPrice.HasValue)
             {
                 query = query.Where(p => p.Price >= minPrice.Value);
             }
-
             if (maxPrice.HasValue)
             {
                 query = query.Where(p => p.Price <= maxPrice.Value);
             }
 
+            // dynamic sorting
+            if (sort != null && sort.Any())
+            {
+                foreach (var sortCondition in sort)
+                {
+                    var parts = sortCondition.Split(' ');   
+                    var property = parts[0];                
+                    var direction = parts.Length > 1 && parts[1].ToLower() == "desc" ? "desc" : "asc";  
+
+                    if (direction == "asc")
+                        query = query.OrderBy(p => EF.Property<object>(p, property));
+                    else
+                        query = query.OrderByDescending(p => EF.Property<object>(p, property));
+                }
+            }
+            // total record
             var totalItems = await query.CountAsync();
+            // paged
             var items = await query.Skip((pageNumber - 1) * pageSize)
                                    .Take(pageSize)
                                    .ToListAsync();
 
             return new PagingResult<Product>
             {
-                TotalItems = totalItems,
-                Items = items
+                TotalItems = totalItems,   
+                Items = items             
             };
         }
 
