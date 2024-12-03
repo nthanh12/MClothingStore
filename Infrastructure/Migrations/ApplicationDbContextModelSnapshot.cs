@@ -412,7 +412,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2024, 11, 28, 21, 49, 51, 789, DateTimeKind.Local).AddTicks(3141));
+                        .HasDefaultValue(new DateTime(2024, 12, 3, 13, 41, 17, 788, DateTimeKind.Local).AddTicks(9495));
 
                     b.Property<bool>("Deleted")
                         .ValueGeneratedOnAdd()
@@ -465,6 +465,12 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserType")
+                        .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .IsRequired()

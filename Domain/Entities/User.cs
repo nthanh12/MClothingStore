@@ -17,8 +17,10 @@ namespace Domain.Entities
 
         [MaxLength(512)]
         public string Password { get; set; } = null!;
+        public int Status { get; set; }
+        public int UserType { get; set; }
 
-        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        public List<UserRole> UserRoles { get; set; } = new();
 
         #region audit
         public DateTime? CreatedDate { get; set; }

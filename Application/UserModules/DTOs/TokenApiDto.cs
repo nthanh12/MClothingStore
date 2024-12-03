@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Application.UserModules.DTOs
 {
-    internal class TokenApiDto
+    public class TokenApiDto
     {
+        public string AccessToken { get; set; } = null!;
+        public string? RefreshToken { get; set; }
     }
 }

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Application.UserModules.DTOs
 {
-    internal class UserLoginDto
+    public class UserLoginDto
     {
+        public string Username { get; set; } = null!;
+        public string Password { get; set; } = null!;
     }
 }
