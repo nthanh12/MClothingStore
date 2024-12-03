@@ -50,12 +50,12 @@ namespace Infrastructure.Repositories
             }
         }
 
-        //public async Task<IEnumerable<ProductCategory>> GetCategoriesByProductIdAsync(int productId)
-        //{
-        //    return await _context.ProductCategories
-        //        .Where(pc => pc.ProductId == productId)
-        //        .ToListAsync();
-        //}
+        public async Task<IEnumerable<ProductCategory>> GetCategoriesByProductIdAsync(int productId)
+        {
+            return await _context.ProductCategories
+                .Where(pc => pc.ProductId == productId)
+                .ToListAsync();
+        }
 
         public async Task RemoveProductFromCategoryAsync(int productId, int categoryId)
         {

@@ -57,6 +57,11 @@ namespace Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public Task DeleteImagesByProductIdAsync(int productId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<ProductImage> GetImageByIdAsync(int productId, int imageId)
         {
             var product = await _context.Set<Product>().FindAsync(productId);

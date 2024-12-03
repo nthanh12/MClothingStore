@@ -11,7 +11,7 @@ namespace Domain.Interfaces
 
         Task RemoveCategoriesAsync(int productId, List<int> categoryIds);
 
-        //Task<List<Category>> GetCategoriesByProductIdAsync(int productId);
+        Task<IEnumerable<ProductCategory>> GetCategoriesByProductIdAsync(int productId);
 
         Task RemoveProductFromCategoryAsync(int productId, int categoryId);
     }

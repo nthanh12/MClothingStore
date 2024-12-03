@@ -55,13 +55,13 @@ namespace Infrastructure.Persistances
             await _context.SaveChangesAsync();
         }
 
-        // Tìm kiếm sản phẩm theo từ khóa
-        public async Task<List<Product>> SearchAsync(string searchTerm)
-        {
-            return await _context.Products
-                .Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm))
-                .ToListAsync();
-        }
+        //// Tìm kiếm sản phẩm theo từ khóa
+        //public async Task<List<Product>> SearchAsync(string searchTerm)
+        //{
+        //    return await _context.Products
+        //        .Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm))
+        //        .ToListAsync();
+        //}
       
         public async Task<PagingResult<Product>> GetPagedProductsAsync(
             int pageNumber,
@@ -125,28 +125,28 @@ namespace Infrastructure.Persistances
             };
         }
 
-        // Lấy sản phẩm theo danh mục
-        public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId)
-        {
-            return await _context.Products
-                .Where(p => p.ProductCategories.Any(pc => pc.CategoryId == categoryId))
-                .ToListAsync();
-        }
+        //// Lấy sản phẩm theo danh mục
+        //public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int categoryId)
+        //{
+        //    return await _context.Products
+        //        .Where(p => p.ProductCategories.Any(pc => pc.CategoryId == categoryId))
+        //        .ToListAsync();
+        //}
 
-        // Lấy sản phẩm theo từ khóa
-        public async Task<IEnumerable<Product>> GetProductsByKeywordAsync(string keyword)
-        {
-            return await _context.Products
-                .Where(p => p.Name.Contains(keyword) || p.Description.Contains(keyword))
-                .ToListAsync();
-        }
+        //// Lấy sản phẩm theo từ khóa
+        //public async Task<IEnumerable<Product>> GetProductsByKeywordAsync(string keyword)
+        //{
+        //    return await _context.Products
+        //        .Where(p => p.Name.Contains(keyword) || p.Description.Contains(keyword))
+        //        .ToListAsync();
+        //}
 
-        // Lấy sản phẩm trong khoảng giá
-        public async Task<IEnumerable<Product>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice)
-        {
-            return await _context.Products
-                .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
-                .ToListAsync();
-        }
+        //// Lấy sản phẩm trong khoảng giá
+        //public async Task<IEnumerable<Product>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice)
+        //{
+        //    return await _context.Products
+        //        .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
+        //        .ToListAsync();
+        //}
     }
 }
