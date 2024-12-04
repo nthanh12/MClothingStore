@@ -18,6 +18,7 @@ namespace API.Controllers
         public ProductController(IProductService productService, ILogger<ProductController> logger) : base(logger)
         {
             _productService = productService;
+            _logger = logger;
         }
 
         [HttpGet("find-all")]
@@ -77,7 +78,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("update-product")]
+        [HttpPut("update-product")]
         public async Task<ApiResponse> UpdateProductAsync([FromBody] UpdateProductRequest input)
         {
             try

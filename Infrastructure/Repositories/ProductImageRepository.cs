@@ -57,10 +57,21 @@ namespace Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public Task DeleteImagesByProductIdAsync(int productId)
+        public async Task DeleteImagesByProductIdAsync(int productId)
         {
-            throw new NotImplementedException();
+            var imagesToDelete = await _context.ProductImages
+                                                 .Where(img => img.ProductId == productId)
+                                                 .ToListAsync();
+            if (!imagesToDelete.Any())
+            {
+                return;
+            }
+
+            _context.ProductImages.RemoveRange(imagesToDelete);
+
+            await _context.SaveChangesAsync();
         }
+
 
         public async Task<ProductImage> GetImageByIdAsync(int productId, int imageId)
         {
@@ -71,18 +82,6 @@ namespace Infrastructure.Repositories
             }
 
             return await _context.Set<ProductImage>().FirstOrDefaultAsync(pi => pi.ProductId == productId && pi.Id == imageId);
-
-        }
-
-        public async Task<IEnumerable<ProductImage>> GetImagesByProductIdAsync(int productId)
-        {
-            var product = await _context.Set<Product>().FindAsync(productId);
-            if (product == null)
-            {
-                throw new Exception("Sản phẩm không tồn tại.");
-            }
-
-            return await _context.Set<ProductImage>().Where(pi => pi.ProductId == productId).ToListAsync();
 
         }
 
@@ -114,6 +113,14 @@ namespace Infrastructure.Repositories
             _context.Set<ProductImage>().UpdateRange(existingImages);
             await _context.SaveChangesAsync();
         }
+        public async Task<IEnumerable<ProductImage>> GetImagesByProductIdAsync(int productId)
+        {
+            var productImages = await _context.Set<ProductImage>()
+                                               .Where(pi => pi.ProductId == productId)
+                                               .ToListAsync();
+            return productImages;
+        }
+
 
     }
 }

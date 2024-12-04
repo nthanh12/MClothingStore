@@ -12,7 +12,7 @@ namespace Domain.Entities
         public int Id { get; set; }
         public int ProductId { get; set; }
         public string? ImageUrl { get; set; }
-        public Product Product { get; set; } = new Product();
+        public Product Product { get; set; }
 
         #region audit
         public DateTime? CreatedDate { get; set; }

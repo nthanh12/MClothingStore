@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="UserModules\DTOs\Category\" />
     <Folder Include="UserModules\DTOs\Role\" />
     <Folder Include="UserModules\DTOs\Payment\" />
     <Folder Include="UserModules\DTOs\Order\" />

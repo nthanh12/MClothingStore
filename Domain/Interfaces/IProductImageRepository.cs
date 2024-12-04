@@ -9,11 +9,11 @@ namespace Domain.Interfaces
 {
     public interface IProductImageRepository
     {
-        Task<IEnumerable<ProductImage>> GetImagesByProductIdAsync(int productId);
         Task<ProductImage> GetImageByIdAsync(int productId, int imageId);
         Task AddImageAsync(int productId, List<ProductImage> productImage);
         Task UpdateImageAsync(int productId, List<ProductImage> productImage);
         Task DeleteImageAsync(int productId, int imageId);
         Task DeleteImagesByProductIdAsync(int productId);
+        Task<IEnumerable<ProductImage>> GetImagesByProductIdAsync(int productId);
     }
 }

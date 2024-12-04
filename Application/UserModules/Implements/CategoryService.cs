@@ -1,8 +1,13 @@
 ﻿using Application.UserModules.Abstracts;
+using Application.UserModules.DTOs.Category;
+using Application.UserModules.DTOs.Product;
+using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Persistances;
 using Microsoft.Extensions.Logging;
+using Shared.Consts.Exceptions;
+using Shared.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,17 +20,21 @@ namespace Application.UserModules.Implements
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly ILogger<CategoryService> _logger;
+        private readonly IMapper _mapper;
 
-        public CategoryService(ICategoryRepository categoryRepository, ILogger<CategoryService> logger)
+        public CategoryService(ICategoryRepository categoryRepository, ILogger<CategoryService> logger, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
             _logger = logger;
+            _mapper = mapper;
         }
 
-        public async Task AddCategoryAsync(Category category)
+        public async Task AddCategoryAsync(AddCategoryDto categoryDto)
         {
             try
             {
+                var category = _mapper.Map<Category>(categoryDto);
+
                 var existingCategory = await _categoryRepository.GetByNameAsync(category.Name);
                 if (existingCategory != null)
                 {
@@ -38,7 +47,7 @@ namespace Application.UserModules.Implements
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error adding category '{category.Name}'");
+                _logger.LogError(ex, $"Error adding category '{categoryDto.Name}'");
                 throw;
             }
         }
@@ -58,13 +67,17 @@ namespace Application.UserModules.Implements
             }
         }
 
-        public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
         {
             try
             {
-                var categories = await _categoryRepository.GetAllAsync();
-                _logger.LogInformation("Retrieved all categories successfully");
-                return categories;
+                var result = await _categoryRepository.GetAllAsync();
+                if (result == null || !result.Any())
+                {
+                    return new List<CategoryDto>();
+                }
+                var categoryDto = _mapper.Map<IEnumerable<CategoryDto>>(result);
+                return categoryDto;
             }
             catch (Exception ex)
             {
@@ -74,7 +87,7 @@ namespace Application.UserModules.Implements
         }
 
 
-        public async Task<Category> GetCategoryByIdAsync(int categoryId)
+        public async Task<CategoryDto> GetCategoryByIdAsync(int categoryId)
         {
             try
             {
@@ -82,10 +95,12 @@ namespace Application.UserModules.Implements
                 if (category == null)
                 {
                     _logger.LogWarning($"Category with ID {categoryId} not found.");
-                    return null;}
-
+                    throw new UserFriendlyException(ErrorCode.CategoryNotFound);
+                }
                 _logger.LogInformation($"Retrieved category with ID {categoryId} successfully.");
-                return category;
+                var categoryDto = _mapper.Map<CategoryDto>(category);
+
+                return categoryDto;
             }
             catch (Exception ex)
             {
@@ -95,23 +110,26 @@ namespace Application.UserModules.Implements
         }
 
 
-        public async Task UpdateCategoryAsync(Category category)
+        public async Task UpdateCategoryAsync(UpdateCategoryDto categoryDto)
         {
             try
             {
-                var existingCategory = await _categoryRepository.GetByIdAsync(category.Id);
+                var existingCategory = await _categoryRepository.GetByIdAsync(categoryDto.Id);
                 if (existingCategory == null)
                 {
-                    _logger.LogWarning($"Category with ID {category.Id} not found. Cannot update.");
-                    throw new KeyNotFoundException($"Category with ID {category.Id} not found.");
+                    _logger.LogWarning($"Category with ID {categoryDto.Id} not found. Cannot update.");
+                    throw new KeyNotFoundException($"Category with ID {categoryDto.Id} not found.");
                 }
 
-                await _categoryRepository.UpdateAsync(category);
-                _logger.LogInformation($"Category with ID {category.Id} updated successfully.");
+                // Cập nhật các thuộc tính cần thay đổi
+                _mapper.Map(categoryDto, existingCategory);
+
+                await _categoryRepository.UpdateAsync(existingCategory);
+                _logger.LogInformation($"Category with ID {existingCategory.Id} updated successfully.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error updating category with ID {category.Id}");
+                _logger.LogError(ex, $"Error updating category with ID {categoryDto.Id}");
                 throw;
             }
         }

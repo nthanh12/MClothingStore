@@ -1,4 +1,5 @@
 ﻿using Application.UserModules.Abstracts;
+using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -26,8 +27,18 @@ namespace Application.UserModules.Implements
         {
             try
             {
-                await _productCategoryRepository.AssignCategoriesAsync(productId, categoryIds);
-                _logger.LogInformation($"Product {productId} assigned to categories successfully.");
+                // Kiểm tra danh mục trùng lặp (gọi phương thức Repository)
+                var categoriesToAdd = await _productCategoryRepository.GetCategoriesToAddAsync(productId, categoryIds);
+
+                if (categoriesToAdd.Any())
+                {
+                    await _productCategoryRepository.AssignProductToCategoriesAsync(productId, categoriesToAdd);
+                    _logger.LogInformation($"Product {productId} assigned to new categories successfully.");
+                }
+                else
+                {
+                    _logger.LogInformation($"Product {productId} already has all the provided categories.");
+                }
             }
             catch (Exception ex)
             {
@@ -36,51 +47,46 @@ namespace Application.UserModules.Implements
             }
         }
 
-        // Gỡ sản phẩm khỏi danh mục cụ thể
+        public async Task RemoveAllCategoriesFromProductAsync(int productId)
+        {
+            try
+            {
+                // Xóa tất cả danh mục của sản phẩm
+                await _productCategoryRepository.RemoveAllCategoriesFromProductAsync(productId);
+                _logger.LogInformation($"All categories removed from product {productId} successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error removing all categories from product {productId}: {ex.Message}");
+                throw;
+            }
+        }
+
+        // Xóa sản phẩm khỏi các danh mục cụ thể
         public async Task RemoveProductFromCategoriesAsync(int productId, List<int> categoryIds)
         {
             try
             {
-                foreach (var categoryId in categoryIds)
+                // Kiểm tra danh mục cần xóa
+                var categoriesToRemove = await _productCategoryRepository.GetCategoriesByProductIdAsync(productId);
+                var categoriesToRemoveIds = categoriesToRemove
+                    .Where(c => categoryIds.Contains(c.CategoryId))
+                    .Select(c => c.CategoryId)
+                    .ToList();
+
+                if (categoriesToRemoveIds.Any())
                 {
-                    await _productCategoryRepository.RemoveProductFromCategoryAsync(productId, categoryId);
-                    _logger.LogInformation($"Product {productId} removed from category {categoryId}.");
+                    await _productCategoryRepository.RemoveProductFromCategoriesAsync(productId, categoriesToRemoveIds);
+                    _logger.LogInformation($"Product {productId} removed from categories successfully.");
+                }
+                else
+                {
+                    _logger.LogInformation($"Product {productId} does not belong to any of the provided categories.");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error removing product {productId} from categories: {ex.Message}");
-                throw;
-            }
-        }
-
-        // Gỡ sản phẩm khỏi tất cả các danh mục mà nó thuộc về
-        public async Task RemoveProductFromAllCategoriesAsync(int productId)
-        {
-            try
-            {
-                // Lấy danh sách các danh mục mà sản phẩm này thuộc về
-                var categories = await _productCategoryRepository.GetCategoriesByProductIdAsync(productId);
-
-                if (categories.Any())
-                {
-                    // Xóa liên kết giữa sản phẩm và tất cả các danh mục
-                    foreach (var category in categories)
-                    {
-                        await _productCategoryRepository.RemoveProductFromCategoryAsync(productId, category.Id);
-                        _logger.LogInformation($"Product {productId} removed from category {category.Id}.");
-                    }
-
-                    _logger.LogInformation($"Product {productId} removed from all categories.");
-                }
-                else
-                {
-                    _logger.LogWarning($"No categories found for product {productId}.");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error removing product {productId} from all categories: {ex.Message}");
                 throw;
             }
         }

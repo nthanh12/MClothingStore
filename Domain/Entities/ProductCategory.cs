@@ -12,8 +12,8 @@ namespace Domain.Entities
         public int Id { get; set; }
         public int ProductId { get; set; }
         public int CategoryId { get; set; }
-        public Product Product { get; set; } = new Product();
-        public Category Category { get; set; } = new Category();
+        public Product? Product { get; set; }
+        public Category? Category { get; set; }
 
         #region audit
         public DateTime? CreatedDate { get; set; }

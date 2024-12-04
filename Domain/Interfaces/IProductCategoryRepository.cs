@@ -7,12 +7,10 @@ namespace Domain.Interfaces
 {
     public interface IProductCategoryRepository
     {
-        Task AssignCategoriesAsync(int productId, List<int> categoryIds);
-
-        Task RemoveCategoriesAsync(int productId, List<int> categoryIds);
-
+        Task AssignProductToCategoriesAsync(int productId, List<int> categoryIds);
+        Task RemoveProductFromCategoriesAsync(int productId, List<int> categoryIds);     
         Task<IEnumerable<ProductCategory>> GetCategoriesByProductIdAsync(int productId);
-
-        Task RemoveProductFromCategoryAsync(int productId, int categoryId);
+        Task<List<int>> GetCategoriesToAddAsync(int productId, List<int> categoryIds);
+        Task RemoveAllCategoriesFromProductAsync(int productId);
     }
 }

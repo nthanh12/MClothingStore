@@ -29,6 +29,10 @@ namespace Shared.Consts.Exceptions
         public const int KeyPermissionOrderFailed = 1012;
         public const int ApiEndpointNotFound = 1013;
 
+        public const int CategoryNotFound = 1014;
+        public const int ProductNotFound = 1015;
+
+
         // Từ điển lỗi
         public static readonly Dictionary<int, string> ErrorDict = new Dictionary<int, string>()
         {
@@ -53,6 +57,10 @@ namespace Shared.Consts.Exceptions
             {KeyPermissionHasBeenExist, ErrorMessage.KeyPermissionHasBeenExist },
             {KeyPermissionOrderFailed, ErrorMessage.KeyPermissionOrderFailed },
             {ApiEndpointNotFound, ErrorMessage.ApiEndpointNotFound },
+
+            {CategoryNotFound, ErrorMessage.CategoryNotFound },
+            {ProductNotFound, ErrorMessage.ProductNotFound },
+
         };
 
         public static string GetMessage(int errorCode)

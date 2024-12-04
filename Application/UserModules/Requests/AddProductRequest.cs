@@ -12,6 +12,6 @@ namespace Application.UserModules.Requests
     {
         public AddProductDto ProductDto { get; set; }
         public List<int> CategoryIds { get; set; }
-        public List<ProductImageDto> ProductImagesDto { get; set; }
+        public List<AddProductImageDto> ProductImagesDto { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.UserModules.DTOs.Category;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace Application.UserModules.Abstracts
 {
     public interface ICategoryService
     {
-        Task<IEnumerable<Category>> GetAllCategoriesAsync();
-        Task<Category> GetCategoryByIdAsync(int categoryId);
-        Task AddCategoryAsync(Category category);
-        Task UpdateCategoryAsync(Category category);
+        Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync();
+        Task<CategoryDto> GetCategoryByIdAsync(int categoryId);
+        Task AddCategoryAsync(AddCategoryDto category);
+        Task UpdateCategoryAsync(UpdateCategoryDto category);
         Task DeleteCategoryAsync(int categoryId);
     }
 }

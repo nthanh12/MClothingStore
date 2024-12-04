@@ -12,6 +12,6 @@ namespace Application.UserModules.Requests
     {
         public UpdateProductDto ProductDto { get; set; }
         public List<int> CategoryIds { get; set; }
-        public List<ProductImageDto> ProductImagesDto { get; set; }
+        public List<UpdateProductImageDto> ProductImagesDto { get; set; }
     }
 }

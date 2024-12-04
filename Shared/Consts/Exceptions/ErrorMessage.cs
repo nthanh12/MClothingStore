@@ -26,6 +26,9 @@ namespace Shared.Consts.Exceptions
         public const string UserNotHavePermission = "Tài khoản không có quyền truy cập!";
         public const string RoleOrUserNotFound = "Role tài khoản không tồn tại";
 
+        public const string CategoryNotFound = "Danh mục không tồn tại";
+        public const string ProductNotFound = "Sản phẩm không tồn tại";
+
 
         public const string KeyPermissionNotFound = "Quyền không tồn tại trong hệ thống";
         public const string KeyPermissionHasBeenExist = "Key quyền đã tồn tại trong hệ thống";

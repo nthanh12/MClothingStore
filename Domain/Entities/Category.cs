@@ -12,7 +12,7 @@ namespace Domain.Entities
         public int Id { get; set; }
         public string Name { get; set; } = null!;
 
-        public ICollection<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
+        public ICollection<ProductCategory>? ProductCategories { get; }
 
         #region audit
         public DateTime? CreatedDate { get; set; }

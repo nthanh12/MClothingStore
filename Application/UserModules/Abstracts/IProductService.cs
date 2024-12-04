@@ -12,8 +12,8 @@ namespace Application.UserModules.Abstracts
 {
     public interface IProductService
     {
-        Task AddProductAsync(AddProductDto productDto, List<int> categoryIds, List<ProductImageDto> productImagesDto);
-        Task UpdateProductAsync(UpdateProductDto productDto, List<int> newCategoryIds, List<ProductImageDto> newProductImagesDto);
+        Task AddProductAsync(AddProductDto productDto, List<int> categoryIds, List<AddProductImageDto> productImagesDto);
+        Task UpdateProductAsync(UpdateProductDto productDto, List<int> newCategoryIds, List<UpdateProductImageDto> newProductImagesDto);
         Task DeleteProductAsync(int productId);
         Task<IEnumerable<ProductDto>> GetAllProductsAsync();
         Task<PagingResult<ProductDto>> GetPagedProductsAsync(ProductPagingRequestDto input);

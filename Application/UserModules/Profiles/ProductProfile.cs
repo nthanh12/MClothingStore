@@ -16,7 +16,7 @@ namespace Application.UserModules.Profiles
             CreateMap<AddProductDto, Product>();
             CreateMap<UpdateProductDto, Product>();
             CreateMap<Product, ProductDto>();
-            CreateMap<Product, ProductForSaleDto>();
+            //CreateMap<Product, ProductForSaleDto>();
         }
     }
 }

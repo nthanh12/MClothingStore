@@ -7,7 +7,7 @@ namespace Infrastructure.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
-        private readonly ApplicationDbContext _context; // DbContext của bạn
+        private readonly ApplicationDbContext _context; 
 
         public CategoryRepository(ApplicationDbContext context)
         {
