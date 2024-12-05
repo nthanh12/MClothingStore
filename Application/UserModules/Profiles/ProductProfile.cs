@@ -15,7 +15,8 @@ namespace Application.UserModules.Profiles
         {
             CreateMap<AddProductDto, Product>();
             CreateMap<UpdateProductDto, Product>();
-            CreateMap<Product, ProductDto>();
+            CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.ImageUrls, opt => opt.MapFrom(src => src.ProductImages.Select(pi => pi.ImageUrl)));
             //CreateMap<Product, ProductForSaleDto>();
         }
     }

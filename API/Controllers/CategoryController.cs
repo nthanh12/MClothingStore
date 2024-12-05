@@ -45,7 +45,7 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching product by id");
+                _logger.LogError(ex, "Error fetching category by id");
                 return OkException(ex);
             }
         }

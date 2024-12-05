@@ -31,6 +31,7 @@ namespace Shared.Consts.Exceptions
 
         public const int CategoryNotFound = 1014;
         public const int ProductNotFound = 1015;
+        public const int PaymentMethodNotFound = 1016;
 
 
         // Từ điển lỗi
@@ -60,6 +61,7 @@ namespace Shared.Consts.Exceptions
 
             {CategoryNotFound, ErrorMessage.CategoryNotFound },
             {ProductNotFound, ErrorMessage.ProductNotFound },
+            {PaymentMethodNotFound, ErrorMessage.PaymentMethodNotFound },
 
         };
 

@@ -28,6 +28,7 @@ namespace Shared.Consts.Exceptions
 
         public const string CategoryNotFound = "Danh mục không tồn tại";
         public const string ProductNotFound = "Sản phẩm không tồn tại";
+        public const string PaymentMethodNotFound = "Phương thức thanh toán không tồn tại";
 
 
         public const string KeyPermissionNotFound = "Quyền không tồn tại trong hệ thống";

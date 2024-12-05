@@ -21,53 +21,20 @@ namespace Infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task AssignProductToCategoriesAsync(int productId, List<int> categoryIds)
+        public async Task AddProductToCategoriesAsync(int productId, List<int> categoryIds)
         {
-            var categories = await _context.Categories
-                .Where(c => categoryIds.Contains(c.Id))
-                .ToListAsync();
-
-            if (categories.Any(c => string.IsNullOrEmpty(c.Name)))
-            {
-                throw new InvalidOperationException("One or more categories have an invalid Name.");
-            }
-
-            var existingProductCategories = await _context.ProductCategories
-                .Where(pc => pc.ProductId == productId && categoryIds.Contains(pc.CategoryId))
-                .ToListAsync();
-
-            var existingCategoryIds = existingProductCategories.Select(pc => pc.CategoryId).ToList();
-            var newCategoryIds = categoryIds.Except(existingCategoryIds).ToList();
-
-            if (!newCategoryIds.Any())
-            {
-                return;
-            }
-
-            var productCategories = newCategoryIds.Select(cId => new ProductCategory
+            var productCategories = categoryIds.Select(cId => new ProductCategory
             {
                 ProductId = productId,
                 CategoryId = cId
             }).ToList();
 
-            // Ghi nhật ký trước khi thêm vào cơ sở dữ liệu
-            foreach (var productCategory in productCategories)
+            if (productCategories.Any())
             {
-                _logger.LogInformation($"Before Add: ProductId: {productCategory.ProductId}, CategoryId: {productCategory.CategoryId}");
-            }
-
-            await _context.ProductCategories.AddRangeAsync(productCategories);
-            await _context.SaveChangesAsync();
-
-            // Ghi nhật ký sau khi lưu vào cơ sở dữ liệu
-            foreach (var productCategory in productCategories)
-            {
-                _logger.LogInformation($"After Save: ProductId: {productCategory.ProductId}, CategoryId: {productCategory.CategoryId}");
+                await _context.ProductCategories.AddRangeAsync(productCategories);
+                await _context.SaveChangesAsync();
             }
         }
-
-
-
         public async Task RemoveProductFromCategoriesAsync(int productId, List<int> categoryIds)
         {
             var productCategories = await _context.ProductCategories
@@ -79,6 +46,11 @@ namespace Infrastructure.Repositories
                 _context.ProductCategories.RemoveRange(productCategories);
                 await _context.SaveChangesAsync();
             }
+        }
+        public async Task AssignProductToCategoriesAsync(int productId, List<int> newCategoryIds)
+        {
+            await RemoveProductFromCategoriesAsync(productId, newCategoryIds);
+            await AddProductToCategoriesAsync(productId, newCategoryIds);
         }
 
         public async Task<IEnumerable<ProductCategory>> GetCategoriesByProductIdAsync(int productId)

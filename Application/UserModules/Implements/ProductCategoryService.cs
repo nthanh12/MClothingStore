@@ -67,7 +67,6 @@ namespace Application.UserModules.Implements
         {
             try
             {
-                // Kiểm tra danh mục cần xóa
                 var categoriesToRemove = await _productCategoryRepository.GetCategoriesByProductIdAsync(productId);
                 var categoriesToRemoveIds = categoriesToRemove
                     .Where(c => categoryIds.Contains(c.CategoryId))

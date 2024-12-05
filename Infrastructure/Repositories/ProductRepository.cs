@@ -39,13 +39,13 @@ namespace Infrastructure.Persistances
         // Lấy tất cả sản phẩm
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.Include(p => p.ProductImages).ToListAsync();
         }
 
         // Lấy sản phẩm theo ID
         public async Task<Product> GetByIdAsync(int id)
         {
-            return await _context.Products.FindAsync(id);
+            return await _context.Products.Include(p => p.ProductImages).SingleOrDefaultAsync(p => p.Id == id);
         }
 
         // Cập nhật sản phẩm
@@ -62,7 +62,7 @@ namespace Infrastructure.Persistances
         //        .Where(p => p.Name.Contains(searchTerm) || p.Description.Contains(searchTerm))
         //        .ToListAsync();
         //}
-      
+
         public async Task<PagingResult<Product>> GetPagedProductsAsync(
             int pageNumber,
             int pageSize,
@@ -70,9 +70,9 @@ namespace Infrastructure.Persistances
             int? categoryId = null,
             decimal? minPrice = null,
             decimal? maxPrice = null,
-            List<string> sort = null) 
+            List<string> sort = null)
         {
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products.Include(p => p.ProductImages).AsQueryable();
 
             // keyword
             if (!string.IsNullOrEmpty(keyword))
@@ -101,9 +101,9 @@ namespace Infrastructure.Persistances
             {
                 foreach (var sortCondition in sort)
                 {
-                    var parts = sortCondition.Split(' ');   
-                    var property = parts[0];                
-                    var direction = parts.Length > 1 && parts[1].ToLower() == "desc" ? "desc" : "asc";  
+                    var parts = sortCondition.Split(' ');
+                    var property = parts[0];
+                    var direction = parts.Length > 1 && parts[1].ToLower() == "desc" ? "desc" : "asc";
 
                     if (direction == "asc")
                         query = query.OrderBy(p => EF.Property<object>(p, property));
@@ -120,8 +120,8 @@ namespace Infrastructure.Persistances
 
             return new PagingResult<Product>
             {
-                TotalItems = totalItems,   
-                Items = items             
+                TotalItems = totalItems,
+                Items = items
             };
         }
 
