@@ -10,6 +10,5 @@ namespace Application.UserModules.DTOs.PaymentMethod
     public class AddPaymentMethodDto
     {
         public string Name { get; set; } = null!;
-        public ICollection<Payment>? Payments { get; set; }
     }
 }
