@@ -18,29 +18,36 @@ namespace Infrastructure.Repositories
         {
             _context = context;
         }
-        public Task AddAsync(Order order)
+        public async Task AddAsync(Order order)
         {
-            throw new NotImplementedException();
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var order = await _context.Orders.FindAsync(id); 
+            if (order != null) 
+            { 
+                _context.Orders.Remove(order); 
+                await _context.SaveChangesAsync(); 
+            }
         }
 
         public async Task<IEnumerable<Order>> GetAllAsync()
         {
-            return await _context.Orders.Include(o.)
+            return await _context.Orders.ToListAsync();
         }
 
-        public Task<Order?> GetByIdAsync(int id)
+        public async Task<Order?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Orders.SingleOrDefaultAsync(o => o.Id == id);
         }
 
-        public Task UpdateAsync(Order order)
+        public async Task UpdateAsync(Order order)
         {
-            throw new NotImplementedException();
+            _context.Orders.Update(order); 
+            await _context.SaveChangesAsync();
         }
     }
 }

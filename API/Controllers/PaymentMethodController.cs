@@ -77,7 +77,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpDelete("delete/id")]
+        [HttpDelete("delete/{id}")]
         public async Task<ApiResponse> DeletePaymentMethodAsync(int id)
         {
             try

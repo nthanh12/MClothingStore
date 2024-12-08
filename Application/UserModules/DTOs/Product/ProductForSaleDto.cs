@@ -13,6 +13,6 @@ namespace Application.UserModules.DTOs.Product
         public string Description { get; set; } = null!;
         public string Color { get; set; } = null!;
         public decimal Price { get; set; }
-        public List<string> ImageUrls { get; set; } = new List<string>();
+        public ICollection<string> ImageUrls { get; set; } = new List<string>();
     }
 }

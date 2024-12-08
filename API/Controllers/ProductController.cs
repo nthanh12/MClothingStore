@@ -88,12 +88,12 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error adding product");
+                _logger.LogError(ex, "Error updating product");
                 return OkException(ex);
             }
         }
 
-        [HttpDelete("delete/id")]
+        [HttpDelete("delete/{id}")]
         public async Task<ApiResponse> DeleteProductAsync(int id)
         {
             try
