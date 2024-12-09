@@ -16,8 +16,8 @@ namespace Domain.Entities
         public decimal UnitPrice { get; set; }
         public string Measurements { get; set; } = null!;
 
-        public Order Order { get; set; } = new Order();
-        public Product Product { get; set; } = new Product();
+        public Order Order { get; set; }
+        public Product Product { get; set; }
 
         #region audit
         public DateTime? CreatedDate { get; set; }

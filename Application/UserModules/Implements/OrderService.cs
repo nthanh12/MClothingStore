@@ -34,8 +34,12 @@ namespace Application.UserModules.Implements
         {
             try
             {
+                decimal totalAmount = CalcTotal(orderDto.OrderDetails);
+
+                totalAmount = ApplyDiscount(totalAmount, orderDto.DiscountRate);
                 //cần thêm transaction
                 var order = _mapper.Map<Order>(orderDto);
+                order.TotalAmount = totalAmount;
 
                 await _orderRepository.AddAsync(order);
 
@@ -43,7 +47,7 @@ namespace Application.UserModules.Implements
                 {
                     var orderDetail = _mapper.Map<OrderDetail>(detailDto);
                     orderDetail.OrderId = order.Id;
-                    
+
                     await _orderDetailService.AddAsync(orderDetail);
                 }
             }
@@ -160,5 +164,20 @@ namespace Application.UserModules.Implements
             }
         }
 
+        private decimal CalcTotal(List<AddOrderDetailDto> orderDetails)
+        {
+            decimal total = 0;
+            foreach (var detail in orderDetails)
+            {
+                total += Calc1Type(detail.Quantity, detail.UnitPrice);
+            }
+            return total;
+        }
+        private decimal Calc1Type(int quantity, decimal unitPrice) { return quantity * unitPrice; }
+        private decimal ApplyDiscount(decimal totalAmount, decimal discountRate)
+        {
+            return totalAmount * (1 - discountRate / 100);
+
+        }
     }
 }

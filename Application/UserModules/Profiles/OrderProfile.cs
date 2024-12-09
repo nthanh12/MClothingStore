@@ -26,11 +26,10 @@ namespace Application.UserModules.Profiles
             
             CreateMap<Order, OrderDto>();
             
-            CreateMap<OrderDetailDto, OrderDetail>()
+            CreateMap<AddOrderDetailDto, OrderDetail>()
                 .ForMember(dest => dest.Product, opt => opt.Ignore());
-            
-            CreateMap<OrderDetail, OrderDetailDto>()
-                .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product));
+
+            CreateMap<OrderDetail, AddOrderDetailDto>();
         }
     }
 }
