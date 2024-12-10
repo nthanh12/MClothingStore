@@ -34,5 +34,18 @@ namespace Application.UserModules.Implements
                 throw;
             }
         }
+        public async Task<int> GetCustomerIdByUserIdAsync(int userId) 
+        { 
+            try
+            {
+                _logger.LogInformation("Get customerId: " + userId);
+                return await _userCustomerRepository.GetCustomerIdByUserIdAsync(userId);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error getting CustomerId");
+                throw;
+            }
+        }
     }
 }

@@ -20,7 +20,8 @@ namespace Domain.Entities
         public int Status { get; set; }
         public int UserType { get; set; }
 
-        public List<UserRole> UserRoles { get; set; } = new();
+        public List<UserRole> UserRoles { get; set; }
+        public ICollection<UserCustomer> UserCustomers { get; set;}
 
         #region audit
         public DateTime? CreatedDate { get; set; }

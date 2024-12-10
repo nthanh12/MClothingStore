@@ -10,5 +10,6 @@ namespace Application.UserModules.Abstracts
     public interface IUserCustomerService
     {
         Task RegisterCustomerAsync(int customerId, int userId);
+        Task<int> GetCustomerIdByUserIdAsync(int userId);
     }
 }

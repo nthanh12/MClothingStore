@@ -43,5 +43,13 @@ namespace Infrastructure.Repositories
         {
             return await _context.UserCustomers.FirstOrDefaultAsync(uc => uc.UserID == userId && uc.CustomerID == customerId);
         }
+
+        public async Task<int> GetCustomerIdByUserIdAsync(int userId)
+        {
+            return await _context.UserCustomers
+                .Where(uc => uc.UserID == userId)
+                .Select(uc => uc.CustomerID)
+                .SingleOrDefaultAsync();
+        }
     }
 }

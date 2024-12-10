@@ -39,9 +39,17 @@ namespace Infrastructure.Repositories
             return await _context.Orders.ToListAsync();
         }
 
-        public async Task<Order?> GetByIdAsync(int id)
+        public async Task<Order> GetByIdAsync(int id)
         {
             return await _context.Orders.SingleOrDefaultAsync(o => o.Id == id);
+        }
+
+        public async Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(int customerId) 
+        { 
+            return await _context.Orders
+                .Include(o => o.OrderDetails)
+                .Where(o => o.CustomerId == customerId)
+                .ToListAsync(); 
         }
 
         public async Task UpdateAsync(Order order)

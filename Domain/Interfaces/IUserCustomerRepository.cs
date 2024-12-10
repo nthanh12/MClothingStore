@@ -13,6 +13,7 @@ namespace Domain.Interfaces
         Task DeleteAsync(int userId, int customerId);
         Task<UserCustomer?> GetByIdsAsync(int userId, int customerId);
         Task<IEnumerable<UserCustomer>> GetAllAsync();
+        Task<int> GetCustomerIdByUserIdAsync(int userId);
     }
 
 }

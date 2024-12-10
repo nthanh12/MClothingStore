@@ -225,6 +225,17 @@ namespace Infrastructure.Persistances
             });
             #endregion
 
+            #region UserCustomer 
+            modelBuilder.Entity<UserCustomer>(e => { e.HasKey(uc => uc.ID); 
+                e.HasIndex(uc => new { uc.UserID, uc.CustomerID }).IsUnique(); 
+                e.HasOne(uc => uc.User) 
+                .WithMany(u => u.UserCustomers) 
+                .HasForeignKey(uc => uc.UserID); 
+                e.HasOne(uc => uc.Customer) 
+                .WithMany(c => c.UserCustomers) 
+                .HasForeignKey(uc => uc.CustomerID); }); 
+            #endregion
+
             base.OnModelCreating(modelBuilder);
 
         }

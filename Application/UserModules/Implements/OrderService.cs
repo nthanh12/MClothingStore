@@ -7,6 +7,7 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Persistances;
 using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -96,7 +97,7 @@ namespace Application.UserModules.Implements
             }
         }
 
-        public async Task<OrderWithDetailsDto?> GetOrderByIdAsync(int id)
+        public async Task<OrderWithDetailsDto> GetOrderByIdAsync(int id)
         {
             try
             {
@@ -118,9 +119,28 @@ namespace Application.UserModules.Implements
                 throw;
             }
         }
+        public async Task<IEnumerable<OrderWithDetailsDto>> GetOrderByCustomerIdAsync(int customerId)
+        {
+            try
+            {
+                var result = await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
+                if (result == null)
+                {
+                    _logger.LogWarning($"This customer has no orders.");
+                    return null;
+                }
+                return _mapper.Map<IEnumerable<OrderWithDetailsDto>>(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving all order");
+                throw;
+            }
+        }
 
         public async Task UpdateOrderAsync(UpdateOrderWithDetailsDto orderDto)
         {
+            //using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var existingOrder = await _orderRepository.GetByIdAsync(orderDto.Id);
@@ -129,37 +149,38 @@ namespace Application.UserModules.Implements
                     _logger.LogWarning($"Order with ID {orderDto.Id} not found.");
                     throw new Exception($"Order with ID {orderDto.Id} not found.");
                 }
+
+                // Cập nhật thông tin đơn hàng
                 _mapper.Map(orderDto, existingOrder);
+
+                decimal totalAmount = CalcTotal(orderDto.OrderDetails);
+                totalAmount = ApplyDiscount(totalAmount, orderDto.DiscountRate);
+                existingOrder.TotalAmount = totalAmount;
+
                 await _orderRepository.UpdateAsync(existingOrder);
 
+                // Xóa tất cả chi tiết đơn hàng cũ
                 var existingOD = await _orderDetailService.GetAllByOrderIdAsync(orderDto.Id);
-
-                var updatedOD = orderDto.OrderDetails.Select(dto => _mapper.Map<OrderDetail>(dto)).ToList();
-
                 foreach (var existingDetail in existingOD)
                 {
-                    if (!updatedOD.Any(uod => uod.Id == existingDetail.Id))
-                    {
-                        await _orderDetailService.DeleteAsync(existingDetail.Id);
-                    }
+                    await _orderDetailService.DeleteAsync(existingDetail.Id);
                 }
 
-                foreach (var updatedDetail in updatedOD)
+                // Thêm chi tiết đơn hàng mới
+                foreach (var detailDto in orderDto.OrderDetails)
                 {
-                    updatedDetail.OrderId = existingOrder.Id;
-                    if (existingOD.Any(eod => eod.Id == updatedDetail.Id))
-                    {
-                        await _orderDetailService.UpdateAsync(updatedDetail);
-                    }
-                    else
-                    {
-                        await _orderDetailService.AddAsync(updatedDetail);
-                    }
+                    var orderDetail = _mapper.Map<OrderDetail>(detailDto);
+                    orderDetail.OrderId = existingOrder.Id;
+                    await _orderDetailService.AddAsync(orderDetail);
                 }
+
+                // Commit transaction
+                //await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error updating order with ID {orderDto.Id}");
+                //await transaction.RollbackAsync();
                 throw;
             }
         }

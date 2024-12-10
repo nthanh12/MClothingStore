@@ -29,6 +29,7 @@ namespace Application.UserModules.Profiles
             CreateMap<AddOrderDetailDto, OrderDetail>()
                 .ForMember(dest => dest.Product, opt => opt.Ignore());
 
+            CreateMap<OrderDetail, OrderDetailDto>();
             CreateMap<OrderDetail, AddOrderDetailDto>();
         }
     }

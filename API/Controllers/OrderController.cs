@@ -5,6 +5,7 @@ using Application.UserModules.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared.WebAPIBase;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -14,9 +15,11 @@ namespace API.Controllers
     {
         private readonly ILogger<OrderController> _logger;
         private readonly IOrderService _orderService;
-        public OrderController(IOrderService orderService, ILogger<OrderController> logger) : base(logger)
+        private readonly IUserCustomerService _userCustomerService;
+        public OrderController(IOrderService orderService, IUserCustomerService userCustomerService, ILogger<OrderController> logger) : base(logger)
         {
             _logger = logger;
+            _userCustomerService = userCustomerService;
             _orderService = orderService;
         }
 
@@ -53,6 +56,15 @@ namespace API.Controllers
         {
             try
             {
+                var userId = GetCurrentUserId();
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("User ID is null");
+                    return new ApiResponse(0, null, 400, "User ID not found. Please ensure you are logged in.");
+                }
+
+                var custId = await _userCustomerService.GetCustomerIdByUserIdAsync(int.Parse(userId));
+                orderDto.CustomerId = custId;
                 await _orderService.AddOrderAsync(orderDto);
                 return new();
             }
@@ -63,11 +75,44 @@ namespace API.Controllers
             }
         }
 
+        [HttpGet("get-my-order")]
+        public async Task<ApiResponse> GetAllMyOrder()
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("User ID is null");
+                    return new ApiResponse(0, null, 400, "User ID not found. Please ensure you are logged in.");
+                }
+
+                var custId = await _userCustomerService.GetCustomerIdByUserIdAsync(int.Parse(userId));
+                _logger.LogInformation("Get customerId by userId");
+                return new(await _orderService.GetOrderByCustomerIdAsync(custId));
+                
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching order by id");
+                return OkException(ex);
+            }
+        }
+
         [HttpPut("update-order")]
         public async Task<ApiResponse> UpdateOrderAsync([FromBody] UpdateOrderWithDetailsDto orderDto)
         {
             try
             {
+                var userId = GetCurrentUserId();
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("User ID is null");
+                    return new ApiResponse(0, null, 400, "User ID not found. Please ensure you are logged in.");
+                }
+
+                var custId = await _userCustomerService.GetCustomerIdByUserIdAsync(int.Parse(userId));
+                orderDto.CustomerId = custId;
                 await _orderService.UpdateOrderAsync(orderDto);
                 return new();
             }
@@ -91,6 +136,11 @@ namespace API.Controllers
                 _logger.LogError(ex, "Error deleting order");
                 return OkException(ex);
             }
+        }
+
+        private string GetCurrentUserId()
+        {
+            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
     }
 }
