@@ -9,7 +9,9 @@ namespace Application.UserModules.Abstracts
 {
     public interface ICustomerService
     {
-        Task RegisterCustomerAsync(RegisterCustomerDto customerDto, int userId);
+        Task RegisterCustomerAsync(UpdateCustomerDto customerDto, int userId);
+        Task UpdateCustomerAsync(UpdateCustomerDto customerDto);
+
     }
 
 

@@ -27,7 +27,7 @@ namespace Application.UserModules.Implements
             _mapper = mapper;
         }
 
-        public async Task RegisterCustomerAsync(RegisterCustomerDto customerDto, int userId)
+        public async Task RegisterCustomerAsync(UpdateCustomerDto customerDto, int userId)
         {
             try
             {
@@ -39,6 +39,26 @@ namespace Application.UserModules.Implements
                 var customerId = customer.Id;
 
                 await _userCustomerService.RegisterCustomerAsync(customerId, userId);
+                _logger.LogInformation("Added customer successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error adding customer: " + customerDto.LastName);
+                throw;
+            }
+        }
+
+        public async Task UpdateCustomerAsync(UpdateCustomerDto customerDto)
+        {
+            try
+            {
+                _logger.LogInformation("Update information customer: " + customerDto.LastName);
+                var customer = _mapper.Map<Customer>(customerDto);
+                await _customerRepository.UpdateAsync(customer);
+
+                //
+                var customerId = customer.Id;
+
                 _logger.LogInformation("Added customer successfully");
             }
             catch (Exception ex)

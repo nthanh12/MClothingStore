@@ -13,7 +13,7 @@ namespace Application.UserModules.Profiles
     {
         public CustomerProfile() 
         {
-            CreateMap<RegisterCustomerDto, Customer>();
+            CreateMap<UpdateCustomerDto, Customer>();
         }
     }
 }
