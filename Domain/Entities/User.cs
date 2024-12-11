@@ -22,6 +22,7 @@ namespace Domain.Entities
 
         public List<UserRole> UserRoles { get; set; }
         public ICollection<UserCustomer> UserCustomers { get; set;}
+        public ICollection<Cart> Carts { get; set; }
 
         #region audit
         public DateTime? CreatedDate { get; set; }

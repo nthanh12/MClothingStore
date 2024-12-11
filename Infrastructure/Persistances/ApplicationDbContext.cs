@@ -32,6 +32,8 @@ namespace Infrastructure.Persistances
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<UserCustomer> UserCustomers { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
         #endregion
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor)
@@ -112,6 +114,7 @@ namespace Infrastructure.Persistances
                 e.Property(u => u.Username).IsRequired().HasMaxLength(50);
                 e.Property(u => u.Password).IsRequired().HasMaxLength(512);
                 e.HasMany(u => u.UserRoles).WithOne(ur => ur.User).HasForeignKey(ur => ur.UserId);
+                e.HasMany(u => u.Carts).WithOne(c => c.User).HasForeignKey(c => c.UserId);
             });
             #endregion
 
@@ -233,7 +236,26 @@ namespace Infrastructure.Persistances
                 .HasForeignKey(uc => uc.UserID); 
                 e.HasOne(uc => uc.Customer) 
                 .WithMany(c => c.UserCustomers) 
-                .HasForeignKey(uc => uc.CustomerID); }); 
+                .HasForeignKey(uc => uc.CustomerID); });
+            #endregion
+
+            #region Cart 
+            modelBuilder.Entity<Cart>(e => { e.HasKey(c => c.Id); 
+                e.HasOne(c => c.User).WithMany(u => u.Carts)
+                .HasForeignKey(c => c.UserId); 
+
+                e.HasMany(c => c.Items)
+                .WithOne(ci => ci.Cart)
+                .HasForeignKey(ci => ci.CartId); }); 
+            #endregion
+
+            #region CartItem 
+            modelBuilder.Entity<CartItem>(e => { e.HasKey(ci => ci.Id); 
+                e.Property(ci => ci.Quantity)
+                .IsRequired(); 
+                e.HasOne(ci => ci.Product)
+                .WithMany()
+                .HasForeignKey(ci => ci.ProductId); }); 
             #endregion
 
             base.OnModelCreating(modelBuilder);

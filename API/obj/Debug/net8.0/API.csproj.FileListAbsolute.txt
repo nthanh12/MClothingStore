@@ -10,6 +10,7 @@ C:\Users\thanh\source\repos\MClothingStore\API\bin\Debug\net8.0\AutoMapper.Exten
 C:\Users\thanh\source\repos\MClothingStore\API\bin\Debug\net8.0\Azure.Core.dll
 C:\Users\thanh\source\repos\MClothingStore\API\bin\Debug\net8.0\Azure.Identity.dll
 C:\Users\thanh\source\repos\MClothingStore\API\bin\Debug\net8.0\Humanizer.dll
+C:\Users\thanh\source\repos\MClothingStore\API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\thanh\source\repos\MClothingStore\API\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\thanh\source\repos\MClothingStore\API\bin\Debug\net8.0\Microsoft.CodeAnalysis.dll
 C:\Users\thanh\source\repos\MClothingStore\API\bin\Debug\net8.0\Microsoft.CodeAnalysis.CSharp.dll
@@ -151,4 +152,3 @@ C:\Users\thanh\source\repos\MClothingStore\API\obj\Debug\net8.0\refint\API.dll
 C:\Users\thanh\source\repos\MClothingStore\API\obj\Debug\net8.0\API.pdb
 C:\Users\thanh\source\repos\MClothingStore\API\obj\Debug\net8.0\API.genruntimeconfig.cache
 C:\Users\thanh\source\repos\MClothingStore\API\obj\Debug\net8.0\ref\API.dll
-C:\Users\thanh\source\repos\MClothingStore\API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
