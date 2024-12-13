@@ -12,9 +12,9 @@ namespace Application.UserModules.Abstracts
     public interface ICartService
     {
         Task<bool> AddItemToCartAsync(AddCartItemDto addCart, int userId);
-        Task<Order> CreateOrderFromCartAsync(int userId);
         Task<bool> RemoveItemFromCartAsync(int userId, int productId);
         Task<bool> UpdateCartItemQuantityAsync(int userId, UpdateCartItemDto updateCartItemDto);
-        Task<CartDto> GetCartByUserIdAsync(int userId);    
+        Task<CartDto> GetCartByUserIdAsync(int userId);
+        Task<bool> ClearCartAsync(int userId);
     }
 }

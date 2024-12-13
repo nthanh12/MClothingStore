@@ -75,6 +75,30 @@ namespace API.Controllers
             }
         }
 
+        [HttpPost("checkout")]
+        public async Task<ApiResponse> CreateOrderFromCart()
+        {
+            try
+            {
+                var user = GetCurrentUserId();
+                if (string.IsNullOrEmpty(user))
+                {
+                    _logger.LogWarning("User ID is null");
+                    return new ApiResponse(0, null, 400, "User ID not found. Please ensure you are logged in.");
+                }
+                var userId = int.Parse(user);
+                var custId = await _userCustomerService.GetCustomerIdByUserIdAsync(userId);
+
+                await _orderService.CreateOrderFromCartAsync(userId, custId);
+                return new();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding order");
+                return OkException(ex);
+            }
+        }
+
         [HttpGet("get-my-order")]
         public async Task<ApiResponse> GetAllMyOrder()
         {
@@ -90,9 +114,9 @@ namespace API.Controllers
                 var custId = await _userCustomerService.GetCustomerIdByUserIdAsync(int.Parse(userId));
                 _logger.LogInformation("Get customerId by userId");
                 return new(await _orderService.GetOrderByCustomerIdAsync(custId));
-                
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching order by id");
                 return OkException(ex);

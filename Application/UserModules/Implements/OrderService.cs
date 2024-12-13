@@ -23,13 +23,88 @@ namespace Application.UserModules.Implements
         private readonly IOrderDetailService _orderDetailService;
         private readonly IMapper _mapper;
         private readonly ILogger<OrderService> _logger;
+        private readonly ICartService _cartService;
+        private readonly IProductService _productService;
 
-        public OrderService(IOrderRepository orderRepository, IOrderDetailService orderDetailService, IMapper mapper, ILogger<OrderService> logger)
+        public OrderService(IOrderRepository orderRepository, IOrderDetailService orderDetailService, IMapper mapper, ILogger<OrderService> logger, ICartService cartService, IProductService productService)
         {
             _orderRepository = orderRepository;
             _orderDetailService = orderDetailService;
             _mapper = mapper;
             _logger = logger;
+            _cartService = cartService;
+            _productService = productService;
+        }
+        public async Task<bool> CreateOrderFromCartAsync(int userId, int customerId)
+        {
+            try
+            {
+                var cart = await _cartService.GetCartByUserIdAsync(userId);
+                if (cart == null || cart.Items.Count == 0)
+                {
+                    _logger.LogWarning($"No cart found for user ID {userId}");
+                    return false;
+                }
+
+                // Tạo danh sách chi tiết đơn hàng từ giỏ hàng
+                var orderDetails = new List<AddOrderDetailDto>(); 
+                foreach (var item in cart.Items) 
+                {
+                    // Lấy thông tin giá sản phẩm từ cơ sở dữ liệu
+                    var product = await _productService.GetProductByIdAsync(item.ProductId); 
+                    if (product == null) 
+                    { 
+                        _logger.LogWarning($"No product found for product ID {item.ProductId}"); 
+                        return false; 
+                    } // Thêm chi tiết đơn hàng
+                    orderDetails.Add(new AddOrderDetailDto 
+                    { 
+                        ProductId = item.ProductId, 
+                        Quantity = item.Quantity, 
+                        UnitPrice = product.Price // Sử dụng giá tại thời điểm đặt hàng
+                    }); 
+                }
+
+                // Tính tổng số tiền đơn hàng bằng cách sử dụng hàm CalcTotal
+                decimal totalAmount = CalcTotal(orderDetails);
+
+                // Áp dụng chiết khấu nếu có
+                decimal discountRate = 0; // Thêm logic lấy tỷ lệ chiết khấu nếu cần
+                totalAmount = ApplyDiscount(totalAmount, discountRate);
+
+                // Tạo đối tượng Order DTO
+                var createOrderDto = new AddOrderWithDetailsDto
+                {
+                    CustomerId = customerId,
+                    OrderDate = DateTime.UtcNow,
+                    DiscountRate = discountRate,
+                    OrderDetails = orderDetails
+                };
+
+                // Ánh xạ DTO sang thực thể Order
+                var order = _mapper.Map<Order>(createOrderDto);
+                order.TotalAmount = totalAmount;
+
+                // Lưu đơn hàng vào cơ sở dữ liệu
+                await _orderRepository.AddAsync(order);
+                // Thêm chi tiết đơn hàng vào cơ sở dữ liệu
+                foreach (var detailDto in createOrderDto.OrderDetails) 
+                { 
+                    var orderDetail = _mapper.Map<OrderDetail>(detailDto); 
+                    orderDetail.OrderId = order.Id; 
+                    await _orderDetailService.AddAsync(orderDetail); 
+                }
+
+                // Xóa giỏ hàng sau khi tạo đơn hàng
+                await _cartService.ClearCartAsync(userId); 
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating order from cart");
+                return false;
+            }
         }
         public async Task AddOrderAsync(AddOrderWithDetailsDto orderDto)
         {
@@ -123,20 +198,32 @@ namespace Application.UserModules.Implements
         {
             try
             {
-                var result = await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
-                if (result == null)
+                var orders = await _orderRepository.GetOrdersByCustomerIdAsync(customerId);
+                if (orders == null || !orders.Any())
                 {
-                    _logger.LogWarning($"This customer has no orders.");
-                    return null;
+                    _logger.LogWarning($"No orders found for customer ID {customerId}");
+                    return Enumerable.Empty<OrderWithDetailsDto>();
                 }
-                return _mapper.Map<IEnumerable<OrderWithDetailsDto>>(result);
+
+                var orderWithDetailsList = new List<OrderWithDetailsDto>();
+
+                foreach (var order in orders)
+                {
+                    var orderDetails = await _orderDetailService.GetAllByOrderIdAsync(order.Id) ?? Enumerable.Empty<OrderDetail>();
+                    var orderWithDetailsDto = _mapper.Map<OrderWithDetailsDto>(order);
+                    orderWithDetailsDto.OrderDetails = _mapper.Map<List<OrderDetailDto>>(orderDetails);
+                    orderWithDetailsList.Add(orderWithDetailsDto);
+                }
+
+                return orderWithDetailsList;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving all order");
+                _logger.LogError(ex, "Error retrieving orders for customer ID {customerId}");
                 throw;
             }
         }
+
 
         public async Task UpdateOrderAsync(UpdateOrderWithDetailsDto orderDto)
         {

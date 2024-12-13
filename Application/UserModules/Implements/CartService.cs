@@ -87,6 +87,33 @@ namespace Application.UserModules.Implements
             // Implementation here if needed
             throw new NotImplementedException();
         }
+        public async Task<bool> ClearCartAsync(int userId)
+        {
+            try
+            {
+                var cart = await _cartRepository.GetCartByUserIdAsync(userId);
+                if (cart == null)
+                {
+                    _logger.LogWarning($"No cart found for user ID {userId}");
+                    return false;
+                }
+
+                foreach (var item in cart.Items)
+                {
+                    await _cartItemService.RemoveCartItemAsync(item.Id);
+                }
+
+                cart.Items.Clear();
+                await _cartRepository.UpdateAsync(cart);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error clearing cart for user ID {userId}");
+                return false;
+            }
+        }
 
         public async Task<bool> UpdateCartItemQuantityAsync(int userId, UpdateCartItemDto updateCartItemDto)
         {
@@ -136,12 +163,6 @@ namespace Application.UserModules.Implements
             // _cache.Set(CartCacheKey + userId, cart, TimeSpan.FromMinutes(30)); // Store in cache
             // }
             return cart;
-        }
-
-        public Task<Order> CreateOrderFromCartAsync(int userId)
-        {
-            // Implementation here if needed
-            throw new NotImplementedException();
         }
 
         #region Increase Quantity

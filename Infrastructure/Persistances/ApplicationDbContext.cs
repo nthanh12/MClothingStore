@@ -158,7 +158,7 @@ namespace Infrastructure.Persistances
             {
                 e.HasKey(o => o.Id);
                 e.Property(o => o.OrderDate).IsRequired();
-                e.Property(o => o.TotalAmount).IsRequired().HasColumnType("decimal(10, 2)");
+                e.Property(o => o.TotalAmount).IsRequired().HasColumnType("decimal(18, 2)");
                 e.HasOne(o => o.Customer)
                     .WithMany(c => c.Orders)
                     .HasForeignKey(o => o.CustomerId)
@@ -172,7 +172,7 @@ namespace Infrastructure.Persistances
                 e.HasKey(od => od.Id);
                 e.Property(od => od.Quantity).IsRequired();
                 e.Property(od => od.UnitPrice).IsRequired().HasColumnType("decimal(10, 2)");
-                e.Property(od => od.Measurements).IsRequired().HasMaxLength(255);
+                //e.Property(od => od.Measurements).IsRequired().HasMaxLength(255);
                 e.HasOne(od => od.Order).WithMany(o => o.OrderDetails).HasForeignKey(od => od.OrderId);
                 e.HasOne(od => od.Product).WithMany(p => p.OrderDetails).HasForeignKey(od => od.ProductId);
             });

@@ -85,21 +85,7 @@ namespace API.Controllers
                 _logger.LogError(ex, "Error updating cart quantity");
                 return OkException(ex);
             }
-        }
-
-        //[HttpPost("checkout")]
-        //public async Task<IActionResult> CreateOrderFromCart()
-        //{
-        //    var order = await _cartService.CreateOrderFromCartAsync();
-        //    if (order != null)
-        //    {
-        //        return Ok(order);
-        //    }
-        //    else
-        //    {
-        //        return BadRequest(new { Error = "Error creating order from cart" });
-        //    }
-        //}
+        }   
 
         [HttpGet("get-my-cart")]
         public async Task<ApiResponse> GetCart()

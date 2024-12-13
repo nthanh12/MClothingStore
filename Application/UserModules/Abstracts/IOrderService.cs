@@ -13,6 +13,7 @@ namespace Application.UserModules.Abstracts
         Task<IEnumerable<OrderDto>> GetAllOrdersAsync();
         Task<OrderWithDetailsDto> GetOrderByIdAsync(int id);
         Task AddOrderAsync(AddOrderWithDetailsDto orderDto);
+        Task<bool> CreateOrderFromCartAsync(int userId, int customerId);
         Task UpdateOrderAsync(UpdateOrderWithDetailsDto orderDto);
         Task DeleteOrderAsync(int id);
         Task<IEnumerable<OrderWithDetailsDto>> GetOrderByCustomerIdAsync(int customerId);

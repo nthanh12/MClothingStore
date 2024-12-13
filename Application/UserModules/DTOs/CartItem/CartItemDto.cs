@@ -12,6 +12,7 @@ namespace Application.UserModules.DTOs.CartItem
         public int Id { get; set; }
         public int ProductId { get; set; }
         public int Quantity { set; get; }
+        public decimal UnitPrice { get; set; }
         public ProductDto Product { get; set; }
     }
 }
